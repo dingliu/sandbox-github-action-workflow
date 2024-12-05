@@ -35,7 +35,7 @@ jobs:
         id: parse-yaml
         uses: mikefarah/yq@v4
         with:
-          cmd: yq -o=json eval '.config' './config/${{ github.event.inputs.service_tier }}.yaml'
+          cmd: yq -o=json eval '.config' './config/${{ github.event_name == 'workflow_dispatch' && github.event.inputs.service_tier || inputs.service_tier }}.yaml'
 
       - name: Generate individual outputs
         id: generate-outputs
