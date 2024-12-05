@@ -24,8 +24,10 @@ jobs:
         env:
           PARSED_JSON: ${{ steps.parse-yaml.outputs.result }}
         run: |
-          echo "database_host=$(echo $PARSED_JSON | jq -r '.database.host')" >> $GITHUB_ENV
-          echo "database_port=$(echo $PARSED_JSON | jq -r '.database.port')" >> $GITHUB_ENV
+          echo $PARSED_JSON | jq -r '.database.host'
+          echo "database_host=$(echo $PARSED_JSON | jq -r '.database.host')" >> "$GITHUB_ENV"
+          echo $PARSED_JSON | jq -r '.database.port'
+          echo "database_port=$(echo $PARSED_JSON | jq -r '.database.port')" >> "$GITHUB_ENV"
     outputs:
       database_host: ${{ steps.generate-outputs.outputs.database_host }}
       database_port: ${{ steps.generate-outputs.outputs.database_port }}
