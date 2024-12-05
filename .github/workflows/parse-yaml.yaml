@@ -1,0 +1,55 @@
+name: Parse YAML
+
+on:
+  # Allows the workflow can be triggered by
+  # an upstream workflow.
+  workflow_call:
+    inputs:
+      service_tier:
+        type: string
+        required: true
+  # Allows the workflow to be triggered manually.
+  workflow_dispatch:
+    inputs:
+      service_tier:
+        description: 'Service tier'
+        required: true
+        type: choice
+        options:
+          - 'engineering'
+          - 'nonproduction'
+          - 'production'
+        default: 'engineering'
+
+permissions:
+  contents: write
+
+jobs:
+  parse_yaml:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Parse YAML
+        id: parse-yaml
+        uses: mikefarah/yq@v4
+        with:
+          cmd: yq -o=json eval '.config' './config/sample.yaml'
+
+      - name: Generate individual outputs
+        id: generate-outputs
+        env:
+          PARSED_JSON: ${{ steps.parse-yaml.outputs.result }}
+        run: |
+          echo "database_host=$(echo $PARSED_JSON | jq -r '.database.host')" >> "$GITHUB_OUTPUT"
+          echo "database_port=$(echo $PARSED_JSON | jq -r '.database.port')" >> "$GITHUB_OUTPUT"
+
+      - name: Print outputs
+        id: print-outputs
+        env:
+          DATABASE_HOST: ${{ steps.generate-outputs.outputs.database_host }}
+          DATABASE_PORT: ${{ steps.generate-outputs.outputs.database_port }}
+        run: |
+          echo "Database host: ${DATABASE_HOST}"
+          echo "Database port: ${DATABASE_PORT}"

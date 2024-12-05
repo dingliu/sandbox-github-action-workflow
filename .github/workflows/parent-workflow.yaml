@@ -1,0 +1,24 @@
+name: Parent Workflow
+
+on:
+  push:
+  workflow_dispatch:
+    inputs:
+      service_tier:
+        description: 'Service tier'
+        required: true
+        type: choice
+        options:
+          - 'engineering'
+          - 'nonproduction'
+          - 'production'
+        default: 'engineering'
+
+permissions:
+  contents: write
+
+jobs:
+  call_child_workflow:
+    uses: ./.github/workflows/parse-yaml.yaml
+    with:
+      service_tier: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.service_tier || 'engineering' }}
