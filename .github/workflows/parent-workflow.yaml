@@ -18,6 +18,6 @@ permissions:
 
 jobs:
   call_child_workflow:
-    uses: ./.github/workflows/parse-yaml
+    uses: ./.github/workflows/parse-yaml.yaml
     with:
       service_tier: ${{ github.event.inputs.service_tier }}
