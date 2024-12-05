@@ -1,7 +1,25 @@
 name: Parse YAML
 
 on:
-  push:
+  # Allows the workflow can be triggered by
+  # an upstream workflow.
+  workflow_call:
+    inputs:
+      service_tier:
+        type: string
+        required: true
+  # Allows the workflow to be triggered manually.
+  workflow_dispatch:
+    inputs:
+      service_tier:
+        description: 'Service tier'
+        required: true
+        type: choice
+        options:
+          - 'engineering'
+          - 'nonproduction'
+          - 'production'
+        default: 'engineering'
 
 permissions:
   contents: write
