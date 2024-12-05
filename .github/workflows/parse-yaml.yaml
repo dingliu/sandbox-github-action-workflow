@@ -28,19 +28,12 @@ jobs:
           echo "database_host=$(echo $PARSED_JSON | jq -r '.database.host')" >> "$GITHUB_ENV"
           echo $PARSED_JSON | jq -r '.database.port'
           echo "database_port=$(echo $PARSED_JSON | jq -r '.database.port')" >> "$GITHUB_ENV"
-    outputs:
-      database_host: ${{ steps.generate-outputs.outputs.database_host }}
-      database_port: ${{ steps.generate-outputs.outputs.database_port }}
 
-  consume_outputs:
-    runs-on: ubuntu-latest
-    needs: parse_yaml
-    steps:
       - name: Print outputs
         id: print-outputs
         env:
-          DATABASE_HOST: ${{ needs.parse_yaml.outputs.database_host }}
-          DATABASE_PORT: ${{ needs.parse_yaml.outputs.database_port }}
+          DATABASE_HOST: ${{ steps.generate-outputs.outputs.database_host }}
+          DATABASE_PORT: ${{ steps.generate-outputs.outputs.database_port }}
         run: |
           echo "Database host: ${DATABASE_HOST}"
           echo "Database port: ${DATABASE_PORT}"
