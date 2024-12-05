@@ -1,0 +1,12 @@
+---
+config:
+  database:
+    host: engineering-db
+    port: 5432
+  environment: development
+  admin_groups:
+    - admin
+    - dba
+    - superuser
+  logging:
+    level: info

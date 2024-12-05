@@ -1,7 +1,7 @@
 ---
 config:
   database:
-    host: localhost
+    host: nonproduction-db
     port: 5432
   environment: development
   admin_groups:
