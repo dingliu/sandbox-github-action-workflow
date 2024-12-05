@@ -18,8 +18,10 @@ jobs:
         id: parse-yaml
         uses: mikefarah/yq@v4
         with:
-          cmd: yq eval '.config' './config/sample.yaml'
+          cmd: yq -o=json eval '.config' './config/sample.yaml'
 
       - name: Use parsed YAML data
+        env:
+          PARSED_JSON: ${{ steps.parse-yaml.outputs.result }}
         run: |
-          echo "Database host is ${{ steps.parse-yaml.outputs.result.database.host }}"
+          echo "Parsed result (as a JSON string) is: '${PARSED_JSON}'"
