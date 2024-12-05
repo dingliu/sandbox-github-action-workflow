@@ -1,0 +1,24 @@
+name: Parse YAML
+
+on:
+  push:
+
+permissions:
+  contents: write
+
+jobs:
+  parse_yaml:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Parse YAML
+        id: parse-yaml
+        uses: mikefarah/yq@v4
+        with:
+          cmd: yq eval '.config' './config/sample.yaml'
+
+      - name: Use parsed YAML data
+        run: echo "config is ${{ steps.parse-yaml.outputs.result }}"
