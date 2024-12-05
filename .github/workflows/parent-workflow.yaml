@@ -1,6 +1,7 @@
 name: Parent Workflow
 
 on:
+  push:
   workflow_dispatch:
     inputs:
       service_tier:
@@ -20,4 +21,4 @@ jobs:
   call_child_workflow:
     uses: ./.github/workflows/parse-yaml.yaml
     with:
-      service_tier: ${{ github.event.inputs.service_tier }}
+      service_tier: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.service_tier || 'engineering' }}
