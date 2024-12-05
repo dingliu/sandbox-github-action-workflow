@@ -21,4 +21,5 @@ jobs:
           cmd: yq eval '.config' './config/sample.yaml'
 
       - name: Use parsed YAML data
-        run: echo "config is ${{ steps.parse-yaml.outputs.result }}"
+        run: |
+          echo "Database host is ${{ steps.parse-yaml.outputs.result.database.host }}"
