@@ -46,4 +46,5 @@ jobs:
         env:
           DATABASE_HOST: ${{ fromJson(steps.parse-yaml.outputs.result).database.host }}
         run: |
+          which yq || echo "yq is not installed"
           echo "Database host: ${DATABASE_HOST}"
