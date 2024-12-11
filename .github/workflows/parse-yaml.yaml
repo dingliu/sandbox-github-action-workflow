@@ -35,24 +35,15 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Parse YAML
+        # Convert the YAML file to minified JSON.
         id: parse-yaml
         uses: mikefarah/yq@v4
         with:
-          cmd: yq -o=json eval '.config' './config/${{ env.service_tier }}.yaml'
-
-      - name: Generate individual outputs
-        id: generate-outputs
-        env:
-          PARSED_JSON: ${{ steps.parse-yaml.outputs.result }}
-        run: |
-          echo "database_host=$(echo $PARSED_JSON | jq -r '.database.host')" >> "$GITHUB_OUTPUT"
-          echo "database_port=$(echo $PARSED_JSON | jq -r '.database.port')" >> "$GITHUB_OUTPUT"
+          cmd: yq -I0 -o=json eval '.config' './config/${{ env.service_tier }}.yaml'
 
       - name: Print outputs
         id: print-outputs
         env:
-          DATABASE_HOST: ${{ steps.generate-outputs.outputs.database_host }}
-          DATABASE_PORT: ${{ steps.generate-outputs.outputs.database_port }}
+          DATABASE_HOST: ${{ fromJson(steps.parse-yaml.outputs.result).database_host }}
         run: |
           echo "Database host: ${DATABASE_HOST}"
-          echo "Database port: ${DATABASE_PORT}"
