@@ -44,6 +44,6 @@ jobs:
       - name: Print outputs
         id: print-outputs
         env:
-          DATABASE_HOST: ${{ fromJson(steps.parse-yaml.outputs.result).database_host }}
+          DATABASE_HOST: ${{ fromJson(steps.parse-yaml.outputs.result).database.host }}
         run: |
           echo "Database host: ${DATABASE_HOST}"
