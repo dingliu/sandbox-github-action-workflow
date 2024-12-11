@@ -30,10 +30,11 @@ env:
 jobs:
   parse_yaml:
     runs-on: ubuntu-latest
+    outputs:
+      json_obj: ${{ fromJson(steps.parse-yaml.outputs.parsed_json) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
       - name: Parse YAML
         # Convert the YAML file to minified JSON.
         id: parse-yaml
@@ -42,10 +43,13 @@ jobs:
           parsed_json="$(yq -I0 -o=json eval '.config' './config/${{ env.service_tier }}.yaml')"
           echo "parsed_json=${parsed_json}" >> "$GITHUB_OUTPUT"
 
+  consume_outputs:
+    runs-on: ubuntu-latest
+    needs: parse_yaml
+    steps:
       - name: Print outputs
         id: print-outputs
         env:
-          DATABASE_HOST: ${{ fromJson(steps.parse-yaml.outputs.parsed_json).database.host }}
+          DATABASE_HOST: ${{ needs.parse_yaml.outputs.json_obj.database.host }}
         run: |
-          which yq || echo "yq is not installed"
           echo "Database host: ${DATABASE_HOST}"
