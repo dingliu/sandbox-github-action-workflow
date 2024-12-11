@@ -37,14 +37,15 @@ jobs:
       - name: Parse YAML
         # Convert the YAML file to minified JSON.
         id: parse-yaml
-        uses: mikefarah/yq@v4
-        with:
-          cmd: yq -I0 -o=json eval '.config' './config/${{ env.service_tier }}.yaml'
+        shell: bash
+        run: |
+          parsed_json="$(yq -I0 -o=json eval '.config' './config/${{ env.service_tier }}.yaml')"
+          echo "parsed_json=${parsed_json}" >> "$GITHUB_OUTPUT"
 
       - name: Print outputs
         id: print-outputs
         env:
-          DATABASE_HOST: ${{ fromJson(steps.parse-yaml.outputs.result).database.host }}
+          DATABASE_HOST: ${{ fromJson(steps.parse-yaml.outputs.parsed_json).database.host }}
         run: |
           which yq || echo "yq is not installed"
           echo "Database host: ${DATABASE_HOST}"
