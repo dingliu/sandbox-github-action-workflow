@@ -31,7 +31,7 @@ jobs:
   parse_yaml:
     runs-on: ubuntu-latest
     outputs:
-      json_obj: ${{ fromJson(steps.parse-yaml.outputs.parsed_json) }}
+      parsed_json: ${{ (steps.parse-yaml.outputs.parsed_json) }}
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -41,6 +41,13 @@ jobs:
         shell: bash
         run: |
           parsed_json="$(yq -I0 -o=json eval '.config' './config/${{ env.service_tier }}.yaml')"
+          echo "### Hello world! :rocket:" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
+          echo "This is the lead in sentence for the list" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY # this is a blank line
+          echo "- Lets add a bullet point" >> $GITHUB_STEP_SUMMARY
+          echo "- Lets add a second bullet point" >> $GITHUB_STEP_SUMMARY
+          echo "- How about a third one?" >> $GITHUB_STEP_SUMMARY
           echo "parsed_json=${parsed_json}" >> "$GITHUB_OUTPUT"
 
   consume_outputs:
@@ -50,6 +57,6 @@ jobs:
       - name: Print outputs
         id: print-outputs
         env:
-          DATABASE_HOST: ${{ needs.parse_yaml.outputs.json_obj.database.host }}
+          DATABASE_HOST: ${{ fromJson(needs.parse_yaml.outputs.parsed_json).database.host }}
         run: |
           echo "Database host: ${DATABASE_HOST}"
